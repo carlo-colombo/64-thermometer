@@ -384,5 +384,37 @@ def main():
         gc.collect()
         if loop_count % 10 == 0 and save_history: save_state()
 
+def do_connect(ssid, password):
+    import network
+    sta_if = network.WLAN(network.STA_IF)
+    if not sta_if.isconnected():
+        print('connecting to network...')
+        sta_if.active(True)
+        sta_if.connect(ssid, password)
+        while not sta_if.isconnected():
+            pass
+    print('network config:', sta_if.ifconfig())
+
 # Entry point.
-main()
+try:
+    with open('wifi-creds.txt') as creds:
+        print('creds found')
+
+        ssid = creds.readline().strip()
+        password = creds.readline().strip()
+        
+        do_connect(ssid, password)
+        
+        main()
+
+except OSError:
+    try:
+        import captive
+        myapp = captive.MyApp(essid='captive test wifi')
+        asyncio.run(myapp.start())
+
+    except KeyboardInterrupt:
+        print('Bye')
+
+    finally:
+        asyncio.new_event_loop()  # Clear retained stat
