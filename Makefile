@@ -4,7 +4,7 @@ help: .help
 
 MPY=../micropython/mpy-cross/build/mpy-cross	
 
-files:=st7789_base.mpy st7789_ext.mpy app.mpy
+files:=st7789_base.mpy st7789_ext.mpy publish.mpy app.mpy
 
 %.mpy : %.py
 	$(MPY) $?

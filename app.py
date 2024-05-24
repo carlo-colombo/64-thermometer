@@ -318,7 +318,7 @@ def load_state():
 def hash_sensor_data(*args):
     return "_".join([str(x) for x in args])
 
-def main():
+def main(publish=lambda *args: None):
     global ts_h, ts_d
     data_hash = None    # Hashing of last data rendered. As long as both
                         # temperature and humidity are the same we don't
@@ -356,6 +356,9 @@ def main():
             ts_d.append(sum(ts_h[-(spq//2):])/(spq//2))
             ts_d = ts_d[-display.width:]
         print("T, H, freemem:",dht.temperature(),dht.humidity(),gc.mem_free())
+        
+        publish("temperature", dht.temperature())
+        publish("humidity", dht.humidity())
 
         # Only useful for debugging of data collection.
         if False:
@@ -384,5 +387,8 @@ def main():
         gc.collect()
         if loop_count % 10 == 0 and save_history: save_state()
 
-# Entry point.
-main()
+from publish import read_credentials_and_connect, mqttClient
+
+read_credentials_and_connect()
+
+main(mqttClient("192.168.1.53"))
