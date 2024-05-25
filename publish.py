@@ -37,7 +37,12 @@ def mqttClient(server):
     print(f"Instantiating {name} ({server})", mqttClient.connect())
 
     def publish(key, value):
-        mqttClient.publish(f"/64-thermometer/{hwid}/{key}", str(value))
+        mqttClient.publish(f"/64-thermometer/{hwid}/{key}", f"""
+        {{
+            "{key}": {value},
+            "state": "ON"
+        }}
+        """)
         
     return publish
 
