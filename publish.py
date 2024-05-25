@@ -25,7 +25,7 @@ def read_credentials_and_connect():
     except OSError:
         print("WiFi credentials not found, create a file with 'username\npassword'")
         
-import machine, ubinascii
+import machine, ubinascii, json
 
 hwid = ubinascii.hexlify(machine.unique_id()).decode('utf-8')
 
@@ -36,13 +36,8 @@ def mqttClient(server):
     mqttClient = MQTTClient(name, server)
     print(f"Instantiating {name} ({server})", mqttClient.connect())
 
-    def publish(key, value):
-        mqttClient.publish(f"/64-thermometer/{hwid}/{key}", f"""
-        {{
-            "{key}": {value},
-            "state": "ON"
-        }}
-        """)
+    def publish(value):
+        mqttClient.publish(f"/64-thermometer/{hwid}", json.dumps({"state": "ON"} | value))
         
     return publish
 

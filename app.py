@@ -357,8 +357,10 @@ def main(publish=lambda *args: None):
             ts_d = ts_d[-display.width:]
         print("T, H, freemem:",dht.temperature(),dht.humidity(),gc.mem_free())
         
-        publish("temperature", dht.temperature())
-        publish("humidity", dht.humidity())
+        publish({
+            "temperature": dht.temperature(),
+            "humidity": dht.humidity()
+        })
 
         # Only useful for debugging of data collection.
         if False:
